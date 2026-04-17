@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block title %}Hasil Bulk Enrollment - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-check-circle text-green-600 mr-2"></i>Hasil Bulk Enrollment
+        </h1>
+        <p class="text-gray-600 mt-2">Ringkasan data siswa yang berhasil ditambahkan</p>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-green-50 border-l-4 border-green-600 p-6 rounded-lg">
+            <p class="text-gray-600 font-semibold">Berhasil Ditambahkan</p>
+            <p class="text-4xl font-bold text-green-600">{{ success_count }}</p>
+            <p class="text-sm text-gray-600 mt-2">Siswa dengan akun baru</p>
+        </div>
+
+        {% if failed_count > 0 %}
+        <div class="bg-yellow-50 border-l-4 border-yellow-600 p-6 rounded-lg">
+            <p class="text-gray-600 font-semibold">Baris Gagal</p>
+            <p class="text-4xl font-bold text-yellow-600">{{ failed_count }}</p>
+            <p class="text-sm text-gray-600 mt-2">Data yang tidak dapat diproses</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Credentials Table -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-user-secret text-blue-600 mr-2"></i>Daftar Akun Siswa
+        </h2>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Password</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">NIS</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    {% for account in object_list %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-sm text-gray-800">{{ account.email }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-800">{{ account.name }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-800 font-mono">{{ account.username }}</td>
+                        <td class="px-4 py-3 text-sm">
+                            <code class="bg-gray-100 px-2 py-1 rounded font-mono text-xs">{{ account.password }}</code>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-800">{{ account.nis }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 bg-yellow-50 border-l-4 border-yellow-600 p-4 rounded">
+            <p class="text-yellow-800 text-sm">
+                <i class="fas fa-warning mr-2"></i>
+                <strong>Penting:</strong> Simpan password ini dengan aman. Bagikan kepada siswa melalui jalur yang aman.
+            </p>
+        </div>
+    </div>
+
+    <!-- Error Log (if any) -->
+    {% if errors %}
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>Baris yang Gagal
+        </h2>
+
+        <div class="space-y-2">
+            {% for row_num, error in errors %}
+            <div class="bg-red-50 border-l-4 border-red-600 p-4 rounded">
+                <p class="text-red-800"><strong>Baris {{ row_num }}:</strong> {{ error }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Export Options -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-download text-green-600 mr-2"></i>Export Credentials
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form method="post" action="{% url 'academic:export_credentials' %}" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="format_choice" value="pdf">
+                <button type="submit" class="w-full bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors font-semibold">
+                    <i class="fas fa-file-pdf mr-2"></i>Download sebagai PDF
+                </button>
+            </form>
+
+            <form method="post" action="{% url 'academic:export_credentials' %}" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="format_choice" value="csv">
+                <button type="submit" class="w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors font-semibold">
+                    <i class="fas fa-file-csv mr-2"></i>Download sebagai CSV
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-4">
+        <a href="{% url 'academic:bulk_enrollment' %}" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-center">
+            <i class="fas fa-plus mr-2"></i>Tambah Siwa Lagi
+        </a>
+        <a href="{% url 'accounts:dashboard' %}" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 transition-colors font-semibold text-center">
+            <i class="fas fa-home mr-2"></i>Kembali ke Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block title %}Hasil Bulk Enrollment Siswa - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-check-circle text-green-600 mr-2"></i>Hasil Bulk Enrollment Siswa
+        </h1>
+        <p class="text-gray-600 mt-2">Ringkasan data siswa yang berhasil ditambahkan</p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-600">
+            <div class="flex items-center">
+                <div class="bg-green-100 p-3 rounded-lg mr-4">
+                    <i class="fas fa-check text-green-600 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">Berhasil Ditambahkan</p>
+                    <p class="text-3xl font-bold text-green-600">{{ success_count }}</p>
+                </div>
+            </div>
+        </div>
+
+        {% if failed_count > 0 %}
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-600">
+            <div class="flex items-center">
+                <div class="bg-yellow-100 p-3 rounded-lg mr-4">
+                    <i class="fas fa-exclamation text-yellow-600 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">Baris Gagal</p>
+                    <p class="text-3xl font-bold text-yellow-600">{{ failed_count }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-600">
+            <div class="flex items-center">
+                <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                    <i class="fas fa-users text-blue-600 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">Total Siswa</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ success_count|add:failed_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credentials Table -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-user-secret text-blue-600 mr-2"></i>Daftar Akun Siswa
+        </h2>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-4 py-2 text-left">No.</th>
+                        <th class="px-4 py-2 text-left">Email</th>
+                        <th class="px-4 py-2 text-left">Nama</th>
+                        <th class="px-4 py-2 text-left">Username</th>
+                        <th class="px-4 py-2 text-left">Password</th>
+                        <th class="px-4 py-2 text-left">NIS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in object_list %}
+                    <tr class="border-t hover:bg-gray-50">
+                        <td class="px-4 py-2">{{ forloop.counter }}</td>
+                        <td class="px-4 py-2 font-mono text-xs">{{ account.email }}</td>
+                        <td class="px-4 py-2">{{ account.name }}</td>
+                        <td class="px-4 py-2 font-mono text-sm">{{ account.username }}</td>
+                        <td class="px-4 py-2 font-mono text-sm bg-blue-50 p-2 rounded">
+                            <span class="text-blue-700 font-bold">{{ account.password }}</span>
+                        </td>
+                        <td class="px-4 py-2">{{ account.nis }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-yellow-50 border-l-4 border-yellow-600 p-4 mt-4 rounded text-sm">
+            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+            <strong>Penting:</strong> Simpan password ini dengan aman. Bagikan kepada siswa melalui jalur yang aman.
+        </div>
+    </div>
+
+    <!-- Error Log (if any) -->
+    {% if errors %}
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-red-800 mb-4">
+            <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>Baris yang Gagal Diproses
+        </h2>
+
+        <div class="space-y-2">
+            {% for error in errors %}
+            <div class="bg-red-50 border border-red-300 p-3 rounded text-sm">
+                <strong class="text-red-700">Baris {{ error.0 }}:</strong>
+                <span class="text-red-600">{{ error.1 }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Export Options -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-download text-green-600 mr-2"></i>Export Credentials
+        </h2>
+        <p class="text-gray-600 mb-4">Export daftar akun siswa dalam format PDF atau CSV untuk distribusi</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form method="post" action="{% url 'academic:export_credentials' %}" class="inline w-full">
+                {% csrf_token %}
+                <input type="hidden" name="format_choice" value="pdf">
+                <button type="submit" class="w-full bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors font-semibold">
+                    <i class="fas fa-file-pdf mr-2"></i>Download sebagai PDF
+                </button>
+            </form>
+
+            <form method="post" action="{% url 'academic:export_credentials' %}" class="inline w-full">
+                {% csrf_token %}
+                <input type="hidden" name="format_choice" value="csv">
+                <button type="submit" class="w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors font-semibold">
+                    <i class="fas fa-file-csv mr-2"></i>Download sebagai CSV
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-4">
+        <a href="{% url 'academic:bulk_enrollment' %}" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-center">
+            <i class="fas fa-plus mr-2"></i>Enrollment Lagi
+        </a>
+        <a href="{% url 'accounts:dashboard' %}" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 transition-colors font-semibold text-center">
+            <i class="fas fa-home mr-2"></i>Kembali ke Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

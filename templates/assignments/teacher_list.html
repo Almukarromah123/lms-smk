@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}My Assignments - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="bg-white rounded-lg shadow-md p-6 flex-1">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-tasks text-green-600 mr-2"></i>My Assignments
+            </h1>
+            <p class="text-gray-600 mt-2">Manage and create assignments for your classes</p>
+        </div>
+        <a href="{% url 'assignments:create' %}" class="w-full md:w-auto bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-center">
+            <i class="fas fa-plus-circle mr-2"></i>Create Assignment
+        </a>
+    </div>
+
+    {% if assignments %}
+    <div class="space-y-4">
+        {% for assignment in assignments %}
+        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-gray-800">{{ assignment.title }}</h3>
+                    <p class="text-sm text-gray-600 mt-1">{{ assignment.description|truncatewords:30 }}</p>
+                    <div class="flex flex-wrap gap-4 mt-3 text-sm text-gray-600">
+                        <span><i class="fas fa-book mr-1"></i>{{ assignment.class_obj.name }}</span>
+                        <span><i class="fas fa-subject mr-1"></i>{{ assignment.subject.name }}</span>
+                        <span><i class="fas fa-calendar mr-1"></i>Due: {{ assignment.due_date|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                    <a href="{% url 'assignments:submissions' assignment_id=assignment.id %}" class="flex-1 sm:flex-none bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 text-center">
+                        <i class="fas fa-eye mr-1"></i>View
+                    </a>
+                    <a href="{% url 'assignments:edit' assignment_id=assignment.id %}" class="flex-1 sm:flex-none bg-yellow-600 text-white px-3 py-2 rounded text-sm hover:bg-yellow-700 text-center">
+                        <i class="fas fa-pencil mr-1"></i>Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-green-50 border-l-4 border-green-600 p-6 rounded">
+        <p class="text-green-800"><i class="fas fa-info-circle mr-2"></i>You haven't created any assignments yet. <a href="{% url 'assignments:create' %}" class="underline font-bold">Create one now</a></p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

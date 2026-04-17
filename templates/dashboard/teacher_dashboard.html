@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}Teacher Dashboard - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Welcome Header -->
+    <div class="gradient-primary text-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold mb-2"><i class="fas fa-chalkboard-user mr-3"></i>Teacher Dashboard</h1>
+        <p class="text-blue-100">Welcome back, {{ user.get_full_name|default:user.username }}! Manage your classes effectively 📚</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">My Classes</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ teaching_assignments.count }}</p>
+                </div>
+                <div class="bg-blue-100 p-4 rounded-lg">
+                    <i class="fas fa-book text-blue-600 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Pending Grading</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ pending_grading_count }}</p>
+                </div>
+                <div class="bg-yellow-100 p-4 rounded-lg">
+                    <i class="fas fa-star text-yellow-600 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Exams Created</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ recent_exams.count }}</p>
+                </div>
+                <div class="bg-purple-100 p-4 rounded-lg">
+                    <i class="fas fa-quiz text-purple-600 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- My Classes -->
+        <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-list mr-2 text-blue-600"></i>My Teaching Assignments</h2>
+            <div class="space-y-3">
+                {% for assignment in teaching_assignments %}
+                <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-l-4 border-blue-600 hover:shadow-lg cursor-pointer transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-gray-800">{{ assignment.class_obj.name }}</p>
+                            <p class="text-sm text-gray-600">{{ assignment.subject.name }}</p>
+                        </div>
+                        <span class="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">Teaching</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 text-center py-8">No classes assigned yet</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-bolt mr-2 text-yellow-600"></i>Aksi Cepat</h2>
+            <div class="space-y-3">
+                <a href="{% url 'courses:teacher_courses' %}" class="block p-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-shadow text-center font-medium">
+                    <i class="fas fa-book-open mr-2"></i>📚 Kelola Kursus
+                </a>
+                <a href="{% url 'assignments:create' %}" class="block p-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-shadow text-center font-medium">
+                    <i class="fas fa-plus-circle mr-2"></i>Buat Tugas
+                </a>
+                <a href="{% url 'exams:create' %}" class="block p-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-shadow text-center font-medium">
+                    <i class="fas fa-pencil mr-2"></i>Buat Ujian
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Recent Assignments -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-tasks mr-2 text-green-600"></i>Recent Assignments</h2>
+            <div class="space-y-3">
+                {% for assignment in recent_assignments %}
+                <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border-l-4 border-green-600">
+                    <p class="font-medium text-gray-800 truncate">{{ assignment.title }}</p>
+                    <div class="flex justify-between items-center mt-1">
+                        <p class="text-xs text-gray-600">{{ assignment.class_obj.name }}</p>
+                        <p class="text-xs text-gray-600">
+                            {% if assignment.is_overdue %}
+                            <span class="text-red-600 font-semibold">Overdue</span>
+                            {% else %}
+                            Due: {{ assignment.due_date|date:"M d" }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 text-center py-4">No assignments yet</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Exams -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-file-alt mr-2 text-purple-600"></i>Recent Exams</h2>
+            <div class="space-y-3">
+                {% for exam in recent_exams %}
+                <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border-l-4 border-purple-600">
+                    <p class="font-medium text-gray-800 truncate">{{ exam.title }}</p>
+                    <div class="flex justify-between items-center mt-1">
+                        <p class="text-xs text-gray-600">{{ exam.class_obj.name }}</p>
+                        <p class="text-xs text-gray-600">{{ exam.exam_date|date:"M d, H:i" }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 text-center py-4">No exams created yet</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gradient-primary {
+        background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+    }
+</style>
+{% endblock %}

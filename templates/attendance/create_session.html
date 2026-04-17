@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Attendance Session - SMK IT AL - MUKARROMAH{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <a href="{% url 'attendance:events_calendar' %}" class="text-blue-600 hover:text-blue-800 font-medium mb-4 inline-block">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Calendar
+        </a>
+
+        <h1 class="text-3xl font-bold gradient-primary bg-clip-text text-transparent">
+            📋 Create Attendance Session
+        </h1>
+        <p class="text-gray-600 mt-2">Set up a new attendance session for a specific subject in your class</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Class Selection -->
+            <div class="mb-6">
+                <label for="{{ form.class_obj.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                    <i class="fas fa-school text-blue-600 mr-2"></i>Select Class
+                </label>
+                {{ form.class_obj }}
+                {% if form.class_obj.errors %}
+                <div class="text-red-600 text-sm mt-1">{{ form.class_obj.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Subject Selection -->
+            <div class="mb-6">
+                <label for="{{ form.subject.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                    <i class="fas fa-book text-blue-600 mr-2"></i>Select Subject
+                </label>
+                {{ form.subject }}
+                {% if form.subject.errors %}
+                <div class="text-red-600 text-sm mt-1">{{ form.subject.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Session Type Selection -->
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-gray-700 mb-3">
+                    <i class="fas fa-door-open text-blue-600 mr-2"></i>Session Type
+                </label>
+                <div class="space-y-3">
+                    {% for radio in form.session_type %}
+                    <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+                        {{ radio.tag }}
+                        <div class="ml-3">
+                            <span class="font-bold text-gray-800">{{ radio.choice_label }}</span>
+                            {% if radio.data.value == "LURING" %}
+                            <p class="text-sm text-gray-600">Tatap Muka - Uses QR code scanning for attendance</p>
+                            {% else %}
+                            <p class="text-sm text-gray-600">Pembelajaran Daring - Students submit attendance manually</p>
+                            {% endif %}
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% if form.session_type.errors %}
+                <div class="text-red-600 text-sm mt-2">{{ form.session_type.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Date Selection -->
+            <div class="mb-6">
+                <label for="{{ form.session_date.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                    <i class="fas fa-calendar text-blue-600 mr-2"></i>Attendance Date
+                </label>
+                {{ form.session_date }}
+                {% if form.session_date.errors %}
+                <div class="text-red-600 text-sm mt-1">{{ form.session_date.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="mb-6">
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                    <i class="fas fa-sticky-note text-blue-600 mr-2"></i>Description
+                </label>
+                {{ form.description }}
+                <p class="text-gray-500 text-sm mt-1">E.g., "Morning Class", "Afternoon Session"</p>
+                {% if form.description.errors %}
+                <div class="text-red-600 text-sm mt-1">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex gap-4">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold transition-smooth flex items-center">
+                    <i class="fas fa-check mr-2"></i>Create Session
+                </button>
+                <a href="{% url 'attendance:events_calendar' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-bold transition-smooth flex items-center">
+                    <i class="fas fa-times mr-2"></i>Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Info Box -->
+    <div class="mt-8 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+        <p class="text-blue-800">
+            <i class="fas fa-info-circle mr-2"></i>
+            <strong>Info:</strong> Once you create an attendance session for a subject, students enrolled in that class can submit their attendance for that specific subject.
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Notification - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800">{{ notification.title }}</h1>
+        <p class="text-gray-600 mt-2"><i class="fas fa-clock mr-2"></i>{{ notification.created_at|date:"M d, Y H:i" }}</p>
+
+        <div class="bg-gray-50 p-6 rounded-lg mt-6">
+            <p>{{ notification.message }}</p>
+        </div>
+
+        {% if not notification.is_read %}
+        <form method="post" action="{% url 'notifications:mark_read' notification.id %}" class="mt-6">
+            {% csrf_token %}
+            <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+                Mark as Read
+            </button>
+        </form>
+        {% endif %}
+
+        <a href="{% url 'notifications:list' %}" class="mt-4 inline-block text-blue-600 hover:underline">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Notifications
+        </a>
+    </div>
+</div>
+{% endblock %}

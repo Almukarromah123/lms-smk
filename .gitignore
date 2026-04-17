@@ -1,0 +1,105 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+.venv
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Django
+*.log
+local_settings.py
+/staticfiles/
+/media/
+db.sqlite3
+db.sqlite3-journal
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Database
+.mysql-local/
+.postgres-local/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# Documentation (keep only README and important docs)
+ATTENDANCE_ENHANCEMENT_COMPLETE.md
+AUTOMATIC_DELETION_GUIDE.md
+BUG_FIX_REPORT.md
+BUG_FIX_EXAM_FEATURE.md
+BULK_ENROLLMENT_DOCUMENTATION.md
+BULK_ENROLLMENT_FIX.md
+CARA_BUAT_USER_SISWA.md
+CARA_ENROLL_SISWA.md
+DEPLOYMENT_GUIDE.md
+EDIT_PROFILE_FIX.md
+ENHANCEMENT_UPDATE.md
+EXAM_PROTECTION_DOCUMENTATION.md
+IMPLEMENTATION_SUMMARY.md
+MYSQL_MIGRATION_FIX.md
+POSTGRESQL_MIGRATION_GUIDE.md
+QR_CODE_ATTENDANCE_IMPLEMENTATION.md
+QUICK_REFERENCE.md
+README_ENROLLMENT.md
+STRUKTUR_DATABASE_ENROLLMENT.md
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Node modules (if using any frontend build tools)
+node_modules/
+npm-debug.log
+
+# Build artifacts
+dist/
+build/
+
+# Project specific
+staticfiles/
+media/
+.mysql-local/

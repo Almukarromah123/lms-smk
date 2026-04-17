@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ lesson.title }} - SMK IT AL-MUKARROMAH{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-6 text-sm text-gray-600 flex items-center gap-2">
+        <a href="{% url 'courses:student_courses' %}" class="text-blue-500 hover:underline">Kursus</a>
+        <span>/</span>
+        <a href="{% url 'courses:course_detail' course_id=course.id %}" class="text-blue-500 hover:underline">{{ course.subject.name }}</a>
+        <span>/</span>
+        <a href="{% url 'courses:module_detail' module.id %}" class="text-blue-500 hover:underline">{{ module.title }}</a>
+        <span>/</span>
+        <span class="text-gray-900">{{ lesson.title }}</span>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Main Content -->
+        <div class="lg:col-span-3">
+            <!-- Lesson Header -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-8">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h1 class="text-3xl font-bold mb-2">{{ lesson.title }}</h1>
+                            {% if lesson.description %}
+                            <p class="text-opacity-90">{{ lesson.description }}</p>
+                            {% endif %}
+                        </div>
+                        <!-- Status Badge -->
+                        <div class="text-right">
+                            {% if lesson_access.is_completed %}
+                                <span class="inline-block bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold">✓ Selesai</span>
+                            {% else %}
+                                <span class="inline-block bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-semibold">⏳ Proses</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson Content -->
+            <div class="bg-white rounded-lg shadow-md p-8 mb-6">
+                {% if lesson.content_type == 'VIDEO' or lesson.content_type == 'MIXED' %}
+                    <!-- Video Content -->
+                    {% if lesson.video_file %}
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold mb-4">🎥 Video Pembelajaran</h2>
+                        <div class="bg-black rounded-lg overflow-hidden">
+                            <video controls class="w-full" controlsList="nodownload">
+                                <source src="{{ lesson.video_file.url }}" type="video/mp4">
+                                Browser Anda tidak mendukung video.
+                            </video>
+                        </div>
+                        {% if lesson.duration_minutes %}
+                        <p class="text-gray-600 text-sm mt-2">⏱ Durasi: {{ lesson.duration_minutes }} menit</p>
+                        {% endif %}
+                    </div>
+                    {% elif lesson.video_url %}
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold mb-4">🎥 Video Pembelajaran</h2>
+                        <div class="relative w-full bg-black rounded-lg overflow-hidden" style="padding-bottom: 56.25%;">
+                            <iframe src="{{ lesson.video_url }}" class="absolute top-0 left-0 w-full h-full"
+                                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+                {% if lesson.content_type == 'TEXT' or lesson.content_type == 'MIXED' %}
+                    <!-- Text Content -->
+                    {% if lesson.text_content %}
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold mb-4">📝 Materi Pembelajaran</h2>
+                        <div class="prose prose-lg prose-blue max-w-none text-gray-700 leading-relaxed">
+                            {{ lesson.text_content|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+                {% if lesson.content_type == 'PDF' or lesson.content_type == 'MIXED' %}
+                    <!-- PDF Content -->
+                    {% if lesson.pdf_file %}
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold mb-4">📄 Dokumen PDF</h2>
+                        <div class="flex items-center justify-between bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
+                            <div class="flex items-center gap-4">
+                                <span class="text-4xl">📑</span>
+                                <div>
+                                    <p class="font-semibold text-gray-900">{{ lesson.pdf_file.name|slice:"14:" }}</p>
+                                    <p class="text-sm text-gray-600">PDF Document</p>
+                                </div>
+                            </div>
+                            <a href="{{ lesson.pdf_file.url }}"
+                               class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold"
+                               download>
+                                ⬇ Download
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+                <!-- Empty State -->
+                {% if not lesson.text_content and not lesson.video_file and not lesson.video_url and not lesson.pdf_file %}
+                <div class="text-center py-12 text-gray-500">
+                    <p class="text-lg">📭 Konten pelajaran akan segera tersedia</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Completion Section -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 mb-6 border-l-4 border-blue-500">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Tandai Pelajaran Sebagai Selesai</h3>
+
+                {% if lesson_access.is_completed %}
+                    <div class="flex items-center gap-3 text-green-600">
+                        <span class="text-2xl">✓</span>
+                        <p>Anda telah menyelesaikan pelajaran ini pada {{ lesson_access.completion_date|date:"d M Y, H:i" }}</p>
+                    </div>
+                {% else %}
+                    <p class="text-gray-700 mb-4">Tandai pelajaran ini sebagai selesai ketika Anda telah menyelesaikannya.</p>
+                    <form method="post" action="{% url 'courses:mark_complete' lesson_id=lesson.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:shadow-lg font-semibold">
+                            ✓ Tandai Sebagai Selesai
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex gap-4">
+                {% if previous_lesson %}
+                <a href="{% url 'courses:lesson_detail' previous_lesson.id %}"
+                   class="flex-1 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-center font-semibold">
+                    ← {{ previous_lesson.title|truncatechars:20 }}
+                </a>
+                {% else %}
+                <div class="flex-1"></div>
+                {% endif %}
+
+                {% if next_lesson %}
+                <a href="{% url 'courses:lesson_detail' next_lesson.id %}"
+                   class="flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-center font-semibold">
+                    {{ next_lesson.title|truncatechars:20 }} →
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+            <!-- Lesson Navigation -->
+            <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">📚 Pelajaran Modul</h3>
+
+                <div class="space-y-2 max-h-96 overflow-y-auto">
+                    {% for lesson_item in module_lessons %}
+                    <a href="{% url 'courses:lesson_detail' lesson_item.id %}"
+                       class="block p-3 rounded-lg transition-all {% if lesson_item.id == lesson.id %}bg-blue-500 text-white font-semibold{% else %}bg-gray-50 hover:bg-gray-100 text-gray-900{% endif %}">
+                        <div class="flex items-center gap-2">
+                            {% if lesson_item.id in completed_lesson_ids %}
+                                <span>✅</span>
+                            {% else %}
+                                <span>📝</span>
+                            {% endif %}
+                            <span class="text-sm truncate">{{ lesson_item.title }}</span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Lesson Details -->
+            <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">ℹ️ Informasi</h3>
+
+                <div class="space-y-4 text-sm">
+                    <div class="pb-4 border-b">
+                        <p class="text-gray-600">Tipe Konten</p>
+                        <p class="font-semibold">
+                            {% if lesson.content_type == 'VIDEO' %}🎥 Video{% elif lesson.content_type == 'PDF' %}📄 PDF{% elif lesson.content_type == 'TEXT' %}📝 Text{% else %}🎨 Konten Campuran{% endif %}
+                        </p>
+                    </div>
+
+                    <div class="pb-4 border-b">
+                        <p class="text-gray-600">Status</p>
+                        <p class="font-semibold">
+                            {% if lesson_access.is_completed %}
+                                <span class="text-green-600">✓ Selesai</span>
+                            {% else %}
+                                <span class="text-yellow-600">⏳ Dalam Proses</span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    {% if lesson.duration_minutes %}
+                    <div>
+                        <p class="text-gray-600">Durasi</p>
+                        <p class="font-semibold">⏱ {{ lesson.duration_minutes }} menit</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

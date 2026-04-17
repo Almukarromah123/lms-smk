@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Hapus Exam - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-trash text-red-600 mr-2"></i>Hapus Exam
+        </h1>
+        <p class="text-gray-600 mt-2">Konfirmasi untuk menghapus exam ini secara permanen</p>
+    </div>
+
+    <!-- Warning Alert -->
+    <div class="bg-red-50 border-l-4 border-red-600 p-6 rounded">
+        <h3 class="text-lg font-bold text-red-800 mb-2">
+            <i class="fas fa-exclamation-triangle mr-2"></i>Peringatan!
+        </h3>
+        <p class="text-red-800 mb-4">
+            Menghapus exam ini akan menghapus semua data terkait termasuk:
+        </p>
+        <ul class="list-disc list-inside text-red-700 space-y-2">
+            <li>Semua soal/pertanyaan dalam exam</li>
+            <li>Semua session ujian siswa yang sedang berlangsung</li>
+            <li>Semua jawaban dan skor siswa</li>
+            <li>Semua hasil ujian dan analisis</li>
+        </ul>
+        <p class="text-red-800 mt-4 font-semibold">Tindakan ini TIDAK DAPAT dikembalikan!</p>
+    </div>
+
+    <!-- Exam Details -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Detail Exam</h2>
+        <div class="space-y-3">
+            <div class="border-b pb-3">
+                <p class="text-gray-600 font-semibold">Judul</p>
+                <p class="text-gray-800">{{ object.title }}</p>
+            </div>
+            <div class="border-b pb-3">
+                <p class="text-gray-600 font-semibold">Kelas</p>
+                <p class="text-gray-800">{{ object.class_obj.name }}</p>
+            </div>
+            <div class="border-b pb-3">
+                <p class="text-gray-600 font-semibold">Mata Pelajaran</p>
+                <p class="text-gray-800">{{ object.subject.name }}</p>
+            </div>
+            <div class="border-b pb-3">
+                <p class="text-gray-600 font-semibold">Tanggal Ujian</p>
+                <p class="text-gray-800">{{ object.exam_date|date:"d F Y H:i" }}</p>
+            </div>
+            <div class="border-b pb-3">
+                <p class="text-gray-600 font-semibold">Jumlah Soal</p>
+                <p class="text-gray-800">{{ object.get_question_count }} soal</p>
+            </div>
+            <div>
+                <p class="text-gray-600 font-semibold">Status</p>
+                <p class="text-gray-800">
+                    {% if object.is_published %}
+                        <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Published</span>
+                    {% else %}
+                        <span class="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">Draft</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Form -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Konfirmasi Penghapusan</h2>
+        <p class="text-gray-700 mb-6">
+            Apakah Anda yakin ingin menghapus exam "<strong>{{ object.title }}</strong>"?
+        </p>
+
+        <form method="post" class="flex gap-4">
+            {% csrf_token %}
+
+            <button type="submit" class="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold">
+                <i class="fas fa-trash mr-2"></i>Ya, Hapus Sekarang
+            </button>
+
+            <a href="{% url 'exams:teacher_list' %}" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 transition-colors font-semibold text-center">
+                <i class="fas fa-times mr-2"></i>Batal
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

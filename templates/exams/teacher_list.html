@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}My Exams - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="bg-white rounded-lg shadow-md p-6 flex-1">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-quiz text-purple-600 mr-2"></i>My Exams
+            </h1>
+            <p class="text-gray-600 mt-2">Create and manage exams for your classes</p>
+        </div>
+        <a href="{% url 'exams:create' %}" class="w-full md:w-auto bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors text-center">
+            <i class="fas fa-plus-circle mr-2"></i>Create Exam
+        </a>
+    </div>
+
+    {% if exams %}
+    <div class="space-y-4">
+        {% for exam in exams %}
+        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-gray-800">{{ exam.title }}</h3>
+                    <p class="text-sm text-gray-600 mt-1">{{ exam.description|truncatewords:30 }}</p>
+                    <div class="flex flex-wrap gap-4 mt-3 text-sm text-gray-600">
+                        <span><i class="fas fa-book mr-1"></i>{{ exam.class_obj.name }}</span>
+                        <span><i class="fas fa-calendar mr-1"></i>{{ exam.exam_date|date:"M d, Y H:i" }}</span>
+                        <span><i class="fas fa-hourglass-half mr-1"></i>{{ exam.duration_minutes }}m</span>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                    <a href="{% url 'exams:questions' exam.id %}" class="flex-1 sm:flex-none bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 text-center">
+                        <i class="fas fa-pencil mr-1"></i>Questions
+                    </a>
+                    <a href="{% url 'exams:results' exam.id %}" class="flex-1 sm:flex-none bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 text-center">
+                        <i class="fas fa-chart-bar mr-1"></i>Results
+                    </a>
+                    <a href="{% url 'exams:edit' exam.id %}" class="flex-1 sm:flex-none bg-yellow-600 text-white px-3 py-2 rounded text-sm hover:bg-yellow-700 text-center">
+                        <i class="fas fa-pencil mr-1"></i>Edit
+                    </a>
+                    <a href="{% url 'exams:delete' exam.id %}" class="flex-1 sm:flex-none bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700 text-center" onclick="return confirm('Apakah Anda yakin ingin menghapus ujian ini? Tindakan ini tidak dapat dibatalkan.')">
+                        <i class="fas fa-trash mr-1"></i>Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-purple-50 border-l-4 border-purple-600 p-6 rounded">
+        <p class="text-purple-800"><i class="fas fa-info-circle mr-2"></i>You haven't created any exams yet. <a href="{% url 'exams:create' %}" class="underline font-bold">Create one now</a></p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

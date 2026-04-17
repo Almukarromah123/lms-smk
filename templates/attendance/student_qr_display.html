@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Display QR Code - SMK IT AL - MUKARROMAH{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+    {% if error %}
+    <div class="max-w-md w-full">
+        <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold text-red-800 mb-2">
+                <i class="fas fa-exclamation-circle mr-2"></i>Error
+            </h2>
+            <p class="text-red-700">{{ error }}</p>
+            <a href="{% url 'attendance:events_calendar' %}" class="text-red-600 hover:text-red-800 font-medium mt-4 inline-block">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Calendar
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="w-full max-w-md">
+        <!-- QR Code Card -->
+        <div class="bg-white rounded-2xl shadow-2xl p-8 text-center">
+            <!-- Header -->
+            <h1 class="text-3xl font-bold gradient-primary bg-clip-text text-transparent mb-2">
+                <i class="fas fa-qrcode mr-2 text-blue-600"></i>Show Your QR Code
+            </h1>
+            <p class="text-gray-600 mb-6">Hold your phone up for the teacher to scan</p>
+
+            <!-- QR Code Image -->
+            <div class="bg-gray-100 p-6 rounded-lg mb-6 flex items-center justify-center min-h-64">
+                {% if qr_code %}
+                <img src="{{ qr_code }}" alt="QR Code" class="max-w-xs w-full h-auto" id="qr-image">
+                {% else %}
+                <div class="text-gray-400">
+                    <i class="fas fa-spinner fa-spin text-3xl mb-2"></i>
+                    <p>Generating QR Code...</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Countdown Timer -->
+            <div class="mb-6">
+                <div class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-bold">
+                    <i class="fas fa-history mr-2"></i>
+                    Refreshes in <span id="countdown">10</span> seconds
+                </div>
+            </div>
+
+            <!-- Session Info -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-6 space-y-3 text-left">
+                <div class="flex justify-between items-start">
+                    <span class="font-bold text-gray-700">Class:</span>
+                    <span class="text-gray-600">{{ session_info.class_name }}</span>
+                </div>
+                <div class="flex justify-between items-start">
+                    <span class="font-bold text-gray-700">Subject:</span>
+                    <span class="text-gray-600">{{ session_info.subject_name }}</span>
+                </div>
+                <div class="flex justify-between items-start">
+                    <span class="font-bold text-gray-700">Teacher:</span>
+                    <span class="text-gray-600">{{ session_info.teacher_name }}</span>
+                </div>
+                <div class="flex justify-between items-start">
+                    <span class="font-bold text-gray-700">Date:</span>
+                    <span class="text-gray-600">{{ session_info.session_date|date:"d F Y" }}</span>
+                </div>
+                <div class="flex justify-between items-start">
+                    <span class="font-bold text-gray-700">Time:</span>
+                    <span class="text-gray-600">{{ session_info.session_time }}</span>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-6 text-left">
+                <p class="text-blue-800">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    <strong>Instructions:</strong>
+                </p>
+                <ul class="text-blue-700 text-sm mt-2 ml-6 list-disc space-y-1">
+                    <li>Keep your phone steady and ensure the QR code is visible</li>
+                    <li>Position the QR code where the teacher can scan it clearly</li>
+                    <li>The QR code changes automatically every 10 seconds for security</li>
+                    <li>If needed, click "Refresh Now" to get a new code immediately</li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+                <button onclick="refreshQRCode()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold transition-smooth flex items-center justify-center">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh Now
+                </button>
+                <a href="{% url 'attendance:events_calendar' %}" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-bold transition-smooth flex items-center justify-center">
+                    <i class="fas fa-times mr-2"></i>Cancel
+                </a>
+            </div>
+
+            <!-- Fullscreen Button -->
+            <button onclick="toggleFullscreen()" class="w-full mt-4 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 px-6 py-2 rounded-lg font-bold transition-smooth flex items-center justify-center">
+                <i id="fullscreen-icon" class="fas fa-expand mr-2"></i>
+                <span id="fullscreen-text">Fullscreen</span>
+            </button>
+        </div>
+
+        <!-- Mobile Fullscreen Indicator -->
+        <div id="fullscreen-mode" class="hidden fixed inset-0 bg-black z-50 flex items-center justify-center p-4">
+            <div class="text-center">
+                <div class="bg-white p-8 rounded-xl">
+                    <img src="{{ qr_code }}" alt="QR Code" class="max-w-sm w-full h-auto mb-6" id="qr-image-fullscreen">
+                    <p class="text-gray-600 mb-4">
+                        <i class="fas fa-info-circle mr-2"></i>Hold steady for teacher to scan
+                    </p>
+                    <button onclick="exitFullscreen()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-bold">
+                        <i class="fas fa-times mr-2"></i>Exit Fullscreen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+const SESSION_ID = '{{ session.id }}';
+let countdownInterval = null;
+let refreshInterval = null;
+
+function startCountdown() {
+    let remaining = {{ expires_in_seconds }};
+    const countdownEl = document.getElementById('countdown');
+
+    if (countdownInterval) clearInterval(countdownInterval);
+
+    countdownInterval = setInterval(() => {
+        remaining--;
+        if (countdownEl) {
+            countdownEl.textContent = remaining;
+        }
+
+        if (remaining <= 0) {
+            refreshQRCode();
+        }
+    }, 1000);
+}
+
+function refreshQRCode() {
+    fetch(`{% url 'attendance:qr_refresh_api' session_id=session.id %}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update QR code image
+                const qrImage = document.getElementById('qr-image');
+                const qrImageFullscreen = document.getElementById('qr-image-fullscreen');
+                if (qrImage) qrImage.src = data.qr_image;
+                if (qrImageFullscreen) qrImageFullscreen.src = data.qr_image;
+
+                // Restart countdown
+                startCountdown();
+            } else {
+                console.error('Failed to refresh QR code:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing QR code:', error);
+        });
+}
+
+function toggleFullscreen() {
+    const fullscreenMode = document.getElementById('fullscreen-mode');
+    fullscreenMode.classList.toggle('hidden');
+}
+
+function exitFullscreen() {
+    const fullscreenMode = document.getElementById('fullscreen-mode');
+    fullscreenMode.classList.add('hidden');
+}
+
+// Start countdown when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    startCountdown();
+});
+</script>
+{% endblock %}

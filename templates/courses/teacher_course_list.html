@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kursus Saya - SMK IT AL-MUKARROMAH{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header with Create Button -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">📚 Kursus Saya</h1>
+            <p class="text-gray-600">Mengelola {{ total_courses }} kursus yang Anda ajarkan</p>
+        </div>
+        <a href="{% url 'courses:course_create' %}"
+           class="w-full md:w-auto text-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:shadow-lg font-semibold">
+            + Buat Kursus Baru
+        </a>
+    </div>
+
+    {% if courses %}
+    <!-- Courses Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for course in courses %}
+        <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border-t-4 border-blue-500">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6">
+                <h3 class="text-xl font-bold mb-2">{{ course.subject.name }}</h3>
+                <p class="text-sm opacity-90">{{ course.class_obj.name }}</p>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6">
+                <!-- Stats -->
+                <div class="grid grid-cols-2 gap-4 mb-6 text-center">
+                    <div class="bg-blue-50 p-3 rounded">
+                        <p class="text-2xl font-bold text-blue-600">{{ course.module_count }}</p>
+                        <p class="text-xs text-gray-600">Modul</p>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded">
+                        <p class="text-2xl font-bold text-indigo-600">{{ course.student_count }}</p>
+                        <p class="text-xs text-gray-600">Siswa</p>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="mb-6">
+                    {% if course.is_active %}
+                    <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
+                        ✓ Aktif
+                    </span>
+                    {% else %}
+                    <span class="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold">
+                        ✗ Nonaktif
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2">
+                    <a href="{% url 'courses:course_detail' course_id=course.id %}"
+                       class="flex-1 text-center px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+                        👁 Lihat
+                    </a>
+                    <a href="{% url 'courses:course_analytics' course_id=course.id %}"
+                       class="flex-1 text-center px-3 py-2 bg-indigo-500 text-white rounded text-sm hover:bg-indigo-600">
+                        📊 Analitik
+                    </a>
+                    <a href="{% url 'courses:course_edit' course_id=course.id %}"
+                       class="flex-1 text-center px-3 py-2 bg-gray-500 text-white rounded text-sm hover:bg-gray-600">
+                        ✏️ Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="mt-12 flex justify-center gap-2">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">« Awal</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">‹ Sebelumnya</a>
+        {% endif %}
+
+        <span class="px-4 py-2">Halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Selanjutnya ›</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Akhir »</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-16">
+        <div class="text-6xl mb-4">📭</div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">Tidak Ada Kursus</h3>
+        <p class="text-gray-600 mb-6">Anda belum membuat kursus apapun. Mari mulai!</p>
+        <a href="{% url 'courses:course_create' %}"
+           class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold">
+            + Buat Kursus Pertama
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Bulk Enrollment - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-users-plus text-blue-600 mr-2"></i>Bulk Enrollment
+        </h1>
+        <p class="text-gray-600 mt-2">Pilih jenis bulk enrollment yang ingin dilakukan</p>
+    </div>
+
+    <!-- Enrollment Options -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Student Enrollment Card -->
+        <div class="bg-white rounded-lg shadow-md p-8 border-l-4 border-green-600 hover:shadow-lg transition-shadow">
+            <div class="flex items-center mb-4">
+                <div class="bg-green-100 p-4 rounded-lg">
+                    <i class="fas fa-graduation-cap text-green-600 text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 ml-4">Bulk Enrollment Siswa</h2>
+            </div>
+
+            <p class="text-gray-600 mb-4">
+                Tambahkan banyak siswa sekaligus dari file Excel. Setiap siswa akan didaftarkan ke kelas tertentu dengan akun otomatis.
+            </p>
+
+            <div class="bg-blue-50 p-4 rounded-lg mb-6 text-sm text-gray-700 space-y-2">
+                <div><i class="fas fa-check text-green-600 mr-2"></i>Upload file Excel dengan data siswa</div>
+                <div><i class="fas fa-check text-green-600 mr-2"></i>Pilih kelas tujuan</div>
+                <div><i class="fas fa-check text-green-600 mr-2"></i>Sistem membuat akun otomatis dengan password</div>
+                <div><i class="fas fa-check text-green-600 mr-2"></i>Export credentials ke PDF/CSV</div>
+            </div>
+
+            <a href="{% url 'academic:student_enrollment' %}" class="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold text-center block">
+                <i class="fas fa-arrow-right mr-2"></i>Lanjutkan
+            </a>
+        </div>
+
+        <!-- Teacher Enrollment Card -->
+        <div class="bg-white rounded-lg shadow-md p-8 border-l-4 border-purple-600 hover:shadow-lg transition-shadow">
+            <div class="flex items-center mb-4">
+                <div class="bg-purple-100 p-4 rounded-lg">
+                    <i class="fas fa-chalkboard-user text-purple-600 text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 ml-4">Bulk Enrollment Guru</h2>
+            </div>
+
+            <p class="text-gray-600 mb-4">
+                Tambahkan banyak guru sekaligus dari file Excel. Setiap guru akan mendapat akun otomatis untuk mengajar di sistem.
+            </p>
+
+            <div class="bg-blue-50 p-4 rounded-lg mb-6 text-sm text-gray-700 space-y-2">
+                <div><i class="fas fa-check text-green-600 mr-2"></i>Upload file Excel dengan data guru</div>
+                <div><i class="fas fa-check text-green-600 mr-2"></i>Sistem membuat akun otomatis dengan password</div>
+                <div><i class="fas fa-check text-green-600 mr-2"></i>Simpan NIP (Nomor Induk Pegawai)</div>
+                <div><i class="fas fa-check text-green-600 mr-2"></i>Siap mengajar di berbagai kelas</div>
+            </div>
+
+            <a href="{% url 'academic:teacher_enrollment' %}" class="w-full bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors font-semibold text-center block">
+                <i class="fas fa-arrow-right mr-2"></i>Lanjutkan
+            </a>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center">
+        <a href="{% url 'accounts:dashboard' %}" class="text-blue-600 hover:text-blue-700 font-semibold">
+            <i class="fas fa-chevron-left mr-2"></i>Kembali ke Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

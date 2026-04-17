@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}My Grades - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+            <i class="fas fa-star text-green-600 mr-2"></i>My Grades
+        </h1>
+        <p class="text-gray-600">View your grades for all subjects</p>
+    </div>
+
+    {% if grades %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for grade in grades %}
+        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-green-600">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-800">{{ grade.subject.name }}</h3>
+                <div class="text-center">
+                    <p class="text-3xl font-bold">
+                        {% if grade.letter_grade == 'A' %}
+                        <span class="text-green-600">{{ grade.letter_grade }}</span>
+                        {% elif grade.letter_grade == 'B' %}
+                        <span class="text-blue-600">{{ grade.letter_grade }}</span>
+                        {% elif grade.letter_grade == 'C' %}
+                        <span class="text-yellow-600">{{ grade.letter_grade }}</span>
+                        {% else %}
+                        <span class="text-red-600">{{ grade.letter_grade }}</span>
+                        {% endif %}
+                    </p>
+                    <p class="text-xs text-gray-600">Grade</p>
+                </div>
+            </div>
+            <p class="text-sm text-gray-600">Academic Year: {{ grade.academic_year.year }}</p>
+            <p class="text-sm text-gray-600">Semester: {{ grade.get_semester_display }}</p>
+            {% if grade.final_score %}
+            <div class="mt-4 w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-green-600 h-2 rounded-full" style="width: {{ grade.final_score }}%"></div>
+            </div>
+            <p class="text-sm text-gray-600 mt-2">Score: {{ grade.final_score|floatformat:1 }}%</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-green-50 border-l-4 border-green-600 p-6 rounded">
+        <p class="text-green-800"><i class="fas fa-info-circle mr-2"></i>No grades available yet. Check back later!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Billing - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+            <i class="fas fa-receipt text-red-600 mr-2"></i>Billing & Payments
+        </h1>
+        <p class="text-gray-600">View and manage your bills and payments</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <p class="text-gray-600 text-sm">Total Bills</p>
+            <p class="text-3xl font-bold text-red-600 mt-2">{{ bills.count }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <p class="text-gray-600 text-sm">Pending Amount</p>
+            <p class="text-3xl font-bold text-yellow-600 mt-2">
+                Rp {{ pending_amount|default:"0"|floatformat:0 }}
+            </p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <p class="text-gray-600 text-sm">Paid Amount</p>
+            <p class="text-3xl font-bold text-green-600 mt-2">
+                Rp {{ paid_amount|default:"0"|floatformat:0 }}
+            </p>
+        </div>
+    </div>
+
+    {% if bills %}
+    <div class="space-y-4">
+        {% for bill in bills %}
+        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow {% if bill.status == 'PAID' %}border-l-4 border-green-600{% else %}border-l-4 border-red-600{% endif %}">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-gray-800">{{ bill.bill_type.name }}</h3>
+                    <p class="text-sm text-gray-600">{{ bill.period }}</p>
+                    <p class="text-2xl font-bold text-red-600 mt-2">Rp {{ bill.amount|floatformat:0 }}</p>
+                    <p class="text-xs text-gray-600 mt-2">Due: {{ bill.due_date|date:"M d, Y" }}</p>
+                </div>
+                <div class="text-right">
+                    {% if bill.status == 'PAID' %}
+                    <span class="inline-block bg-green-100 text-green-800 text-xs font-bold px-3 py-2 rounded-full">PAID</span>
+                    {% elif bill.status == 'OVERDUE' %}
+                    <span class="inline-block bg-red-100 text-red-800 text-xs font-bold px-3 py-2 rounded-full">OVERDUE</span>
+                    {% else %}
+                    <span class="inline-block bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-2 rounded-full">PENDING</span>
+                    {% endif %}
+                    <a href="{% url 'payments:bill_detail' bill.id %}" class="block mt-3 bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">
+                        Details
+                    </a>
+                    {% if bill.status != 'PAID' %}
+                    <a href="{% url 'payments:pay_bill' bill.id %}" class="block mt-2 bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">
+                        Pay Now
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="flex justify-center mt-6">
+        <a href="{% url 'payments:payment_history' %}" class="text-blue-600 hover:underline">View Payment History</a>
+    </div>
+    {% else %}
+    <div class="bg-green-50 border-l-4 border-green-600 p-6 rounded">
+        <p class="text-green-800"><i class="fas fa-check-circle mr-2"></i>No bills! You're all caught up!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

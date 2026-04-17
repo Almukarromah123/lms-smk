@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Import Questions - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Import Questions for {{ exam.title }}</h1>
+
+        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h2 class="text-lg font-semibold text-blue-700">Template Import .xlsx</h2>
+            <p class="text-gray-600 mt-2">Gunakan template berikut di file Excel:</p>
+            <div class="mt-3 space-y-1 text-sm text-gray-700">
+                <p><strong>question_type</strong>: MCQ / TF / ESSAY / MATCHING</p>
+                <p><strong>question_text</strong>: Isi teks pertanyaan</p>
+                <p><strong>points</strong>: Nilai soal, misal 1 atau 2.5</p>
+                <p><strong>options_data</strong>: JSON untuk jawaban pilihan, misal {"A": "Opsi A", "B": "Opsi B"}</p>
+                <p><strong>correct_answer</strong>: Kunci jawaban, misal A atau True</p>
+                <p><strong>explanation</strong>: Penjelasan jawaban benar (opsional)</p>
+            </div>
+            <p class="text-sm text-gray-500 mt-3">Catatan: untuk soal bergambar, tambahkan gambar setelah import dengan mengedit setiap soal.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div class="mb-4">
+                <label for="{{ form.xlsx_file.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">{{ form.xlsx_file.label }}</label>
+                {{ form.xlsx_file }}
+                {% if form.xlsx_file.help_text %}
+                    <p class="text-xs text-gray-500 mt-1">{{ form.xlsx_file.help_text }}</p>
+                {% endif %}
+                {% for error in form.xlsx_file.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="flex gap-4 mt-8">
+                <button type="submit" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700">Import Questions</button>
+                <a href="{% url 'exams:questions' exam.id %}" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700">Back to Questions</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

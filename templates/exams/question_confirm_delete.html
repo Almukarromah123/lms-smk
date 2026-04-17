@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Delete Question - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Delete Question</h1>
+        <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus soal ini?</p>
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+            <h2 class="text-lg font-semibold text-gray-800">{{ object.question_text|truncatechars:180 }}</h2>
+            {% if object.image %}
+            <img src="{{ object.image.url }}" class="mt-4 max-w-full rounded-lg" alt="question image">
+            {% endif %}
+        </div>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700">Yes, Delete</button>
+            <a href="{% url 'exams:questions' object.exam.id %}" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

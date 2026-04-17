@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">{{ title }} untuk {{ exam.title }}</h1>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.question_type.id_for_label }}" class="block text-sm font-bold text-gray-800 mb-2">Question Type</label>
+                    {{ form.question_type }}
+                    <p class="text-xs text-gray-500 mt-1">Pilih tipe soal: MCQ, True/False, Essay, atau Matching</p>
+                    {% if form.question_type.errors %}
+                        <div class="text-red-600 text-sm mt-2">{{ form.question_type.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.points.id_for_label }}" class="block text-sm font-bold text-gray-800 mb-2">Points</label>
+                    {{ form.points }}
+                    {% if form.points.errors %}
+                        <div class="text-red-600 text-sm mt-2">{{ form.points.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.question_text.id_for_label }}" class="block text-sm font-bold text-gray-800 mb-2">Question Text</label>
+                {{ form.question_text }}
+                {% if form.question_text.errors %}
+                    <div class="text-red-600 text-sm mt-2">{{ form.question_text.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.image.id_for_label }}" class="block text-sm font-bold text-gray-800 mb-2">Image (Optional)</label>
+                {{ form.image }}
+                <p class="text-xs text-gray-500 mt-1">Upload gambar untuk mengilustrasikan soal</p>
+                {% if object.image %}
+                    <div class="mt-3">
+                        <img src="{{ object.image.url }}" max-width="200px" class="rounded-lg border">
+                    </div>
+                {% endif %}
+                {% if form.image.errors %}
+                    <div class="text-red-600 text-sm mt-2">{{ form.image.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div id="mcq-section" class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">🎯 Options (for MCQ) - Text and/or Images</h3>
+                <div class="space-y-6 mb-4">
+                    <!-- Option A -->
+                    <div class="bg-white p-4 rounded-lg border border-gray-300">
+                        <div class="flex items-start gap-3 mb-3">
+                            <span class="text-lg font-bold text-blue-600 w-10 mt-2">A.</span>
+                            <div class="flex-1">
+                                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded" placeholder="Option A text" data-option="A">
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 ml-13">
+                            <input type="file" name="option_image_A" class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm" placeholder="Upload image for Option A" data-option-image="A" accept="image/*">
+                        </div>
+                        <div id="preview_A" class="mt-3 hidden">
+                            <img src="" alt="Preview A" class="w-32 h-32 object-cover rounded" id="img_A">
+                            <button type="button" class="mt-2 text-red-600 text-sm hover:text-red-800" data-remove-image="A">Remove Image</button>
+                        </div>
+                    </div>
+
+                    <!-- Option B -->
+                    <div class="bg-white p-4 rounded-lg border border-gray-300">
+                        <div class="flex items-start gap-3 mb-3">
+                            <span class="text-lg font-bold text-blue-600 w-10 mt-2">B.</span>
+                            <div class="flex-1">
+                                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded" placeholder="Option B text" data-option="B">
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 ml-13">
+                            <input type="file" name="option_image_B" class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm" placeholder="Upload image for Option B" data-option-image="B" accept="image/*">
+                        </div>
+                        <div id="preview_B" class="mt-3 hidden">
+                            <img src="" alt="Preview B" class="w-32 h-32 object-cover rounded" id="img_B">
+                            <button type="button" class="mt-2 text-red-600 text-sm hover:text-red-800" data-remove-image="B">Remove Image</button>
+                        </div>
+                    </div>
+
+                    <!-- Option C -->
+                    <div class="bg-white p-4 rounded-lg border border-gray-300">
+                        <div class="flex items-start gap-3 mb-3">
+                            <span class="text-lg font-bold text-blue-600 w-10 mt-2">C.</span>
+                            <div class="flex-1">
+                                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded" placeholder="Option C text" data-option="C">
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 ml-13">
+                            <input type="file" name="option_image_C" class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm" placeholder="Upload image for Option C" data-option-image="C" accept="image/*">
+                        </div>
+                        <div id="preview_C" class="mt-3 hidden">
+                            <img src="" alt="Preview C" class="w-32 h-32 object-cover rounded" id="img_C">
+                            <button type="button" class="mt-2 text-red-600 text-sm hover:text-red-800" data-remove-image="C">Remove Image</button>
+                        </div>
+                    </div>
+
+                    <!-- Option D -->
+                    <div class="bg-white p-4 rounded-lg border border-gray-300">
+                        <div class="flex items-start gap-3 mb-3">
+                            <span class="text-lg font-bold text-blue-600 w-10 mt-2">D.</span>
+                            <div class="flex-1">
+                                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded" placeholder="Option D text" data-option="D">
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 ml-13">
+                            <input type="file" name="option_image_D" class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm" placeholder="Upload image for Option D" data-option-image="D" accept="image/*">
+                        </div>
+                        <div id="preview_D" class="mt-3 hidden">
+                            <img src="" alt="Preview D" class="w-32 h-32 object-cover rounded" id="img_D">
+                            <button type="button" class="mt-2 text-red-600 text-sm hover:text-red-800" data-remove-image="D">Remove Image</button>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500">💡 Setiap opsi bisa punya text, gambar, atau keduanya. Setidaknya salah satu harus ada!</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.correct_answer.id_for_label }}" class="block text-sm font-bold text-gray-800 mb-2">Correct Answer</label>
+                    {{ form.correct_answer }}
+                    <p class="text-xs text-gray-500 mt-1">Untuk MCQ: A, B, C, D | Untuk TF: True, False | Untuk Essay: (diisi manual)</p>
+                    {% if form.correct_answer.errors %}
+                        <div class="text-red-600 text-sm mt-2">{{ form.correct_answer.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.explanation.id_for_label }}" class="block text-sm font-bold text-gray-800 mb-2">Explanation (Optional)</label>
+                {{ form.explanation }}
+                <p class="text-xs text-gray-500 mt-1">Penjelasan jawaban yang benar untuk siswa</p>
+                {% if form.explanation.errors %}
+                    <div class="text-red-600 text-sm mt-2">{{ form.explanation.errors }}</div>
+                {% endif %}
+            </div>
+
+            <input type="hidden" id="options_data_input" name="options_data" value="">
+            <input type="hidden" id="options_images_input" name="options_images" value="">
+
+            <div class="flex gap-4 mt-8">
+                <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+                    <i class="fas fa-save mr-2"></i>Save Question
+                </button>
+                <a href="{% url 'exams:questions' exam.id %}" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+const optionCodes = ['A', 'B', 'C', 'D'];
+const optionImages = {};  // Store image data URLs
+
+// Handle image preview and file storage
+optionCodes.forEach(code => {
+    const fileInput = document.querySelector(`[data-option-image="${code}"]`);
+    const previewDiv = document.getElementById(`preview_${code}`);
+    const previewImg = document.getElementById(`img_${code}`);
+    const removeBtn = document.querySelector(`[data-remove-image="${code}"]`);
+
+    // File input change handler
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                optionImages[code] = {
+                    name: file.name,
+                    data: event.target.result
+                };
+                previewImg.src = event.target.result;
+                previewDiv.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Remove image button handler
+    if (removeBtn) {
+        removeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            fileInput.value = '';
+            delete optionImages[code];
+            previewDiv.classList.add('hidden');
+        });
+    }
+});
+
+// Form submission - build JSON data
+document.querySelector('form').addEventListener('submit', function(e) {
+    // Build options_data (text only)
+    const optionsData = {};
+    document.querySelectorAll('[data-option]').forEach(input => {
+        const option = input.getAttribute('data-option');
+        const value = input.value.trim();
+        if (value) {
+            optionsData[option] = value;
+        }
+    });
+    document.getElementById('options_data_input').value = JSON.stringify(optionsData);
+
+    // Build options_images (file names/paths)
+    // Note: Actual file uploads handled by Django's FileField
+    const optionsImagesData = {};
+    optionCodes.forEach(code => {
+        const fileInput = document.querySelector(`[data-option-image="${code}"]`);
+        if (fileInput.files.length > 0) {
+            optionsImagesData[code] = fileInput.files[0].name;
+        }
+    });
+    // Store as JSON string for now, actual files uploaded via multipart form
+    if (Object.keys(optionsImagesData).length > 0) {
+        document.getElementById('options_images_input').value = JSON.stringify(optionsImagesData);
+    }
+});
+
+// Restore options if editing
+const existingOptions = {{ form.options_data.value|default:"{}" }};
+if (Object.keys(existingOptions).length > 0) {
+    Object.entries(existingOptions).forEach(([key, value]) => {
+        const input = document.querySelector(`[data-option="${key}"]`);
+        if (input) {
+            input.value = value;
+        }
+    });
+}
+</script>
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analitik {{ course.subject.name }} - SMK IT AL-MUKARROMAH{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <nav class="mb-6 text-sm text-gray-600">
+        <a href="{% url 'courses:teacher_courses' %}" class="text-blue-500 hover:underline">← Kembali ke Kursus</a>
+    </nav>
+
+    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg p-8 mb-8">
+        <h1 class="text-4xl font-bold mb-2">📊 Analitik Kursus</h1>
+        <p class="text-lg opacity-90">{{ course.subject.name }} - {{ course.class_obj.name }}</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <p class="text-gray-600 mb-2">Total Siswa</p>
+            <p class="text-4xl font-bold text-blue-600">{{ total_students }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <p class="text-gray-600 mb-2">Total Modul</p>
+            <p class="text-4xl font-bold text-indigo-600">{{ total_modules }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <p class="text-gray-600 mb-2">Total Pelajaran</p>
+            <p class="text-4xl font-bold text-purple-600">{{ total_lessons }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <p class="text-gray-600 mb-2">Rata-rata Progress</p>
+            <p class="text-4xl font-bold text-green-600">
+                {% if student_progress %}
+                    {{ average_progress }}%
+                {% else %}
+                    0%
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Student Progress Table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6">
+            <h2 class="text-2xl font-bold">👥 Progress Siswa</h2>
+        </div>
+
+        {% if student_progress %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-100 border-b border-gray-300">
+                    <tr>
+                        <th class="px-6 py-3 text-left font-semibold text-gray-900">Nama Siswa</th>
+                        <th class="px-6 py-3 text-center font-semibold text-gray-900">Pelajaran Selesai</th>
+                        <th class="px-6 py-3 text-center font-semibold text-gray-900">Progress</th>
+                        <th class="px-6 py-3 text-center font-semibold text-gray-900">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for progress in student_progress %}
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                            <div>
+                                <p class="font-semibold text-gray-900">{{ progress.student.get_full_name }}</p>
+                                <p class="text-sm text-gray-500">{{ progress.student.email }}</p>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold">
+                                {{ progress.completed }}/{{ progress.total }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full transition-all"
+                                         style="width: {{ progress.progress|floatformat:0 }}%"></div>
+                                </div>
+                                <span class="font-bold text-gray-900 w-12 text-right">{{ progress.progress|floatformat:0 }}%</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            {% if progress.progress == 100 %}
+                                <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">✓ Selesai</span>
+                            {% elif progress.progress >= 50 %}
+                                <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">⏳ Dalam Proses</span>
+                            {% else %}
+                                <span class="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">📌 Baru Mulai</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-12 text-center text-gray-500">
+            <p class="text-lg">📭 Belum ada siswa yang terdaftar di kursus ini.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-8">
+        <a href="{% url 'courses:course_edit' course_id=course.id %}"
+           class="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:shadow-lg font-semibold inline-block">
+            ✏️ Edit Kursus
+        </a>
+    </div>
+</div>
+
+<script>
+// Helper function for dict access in template
+document.addEventListener('DOMContentLoaded', function() {
+    // Template helper
+});
+</script>
+{% endblock %}

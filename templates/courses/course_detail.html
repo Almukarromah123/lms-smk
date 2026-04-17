@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.subject.name }} - SMK IT AL-MUKARROMAH{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Breadcrumb -->
+    <div class="text-sm text-gray-600">
+        <a href="{% url 'courses:student_courses' %}" class="hover:text-blue-600">Kursus</a> / <span>{{ course.subject.name }}</span>
+    </div>
+
+    <!-- Header -->
+    <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg p-8 text-white">
+        <h1 class="text-4xl font-bold mb-2">{{ course.subject.name }}</h1>
+        <p class="mb-4">{{ course.class_obj.name }} • Pengajar: {{ course.teacher.get_full_name }}</p>
+        <div class="w-full bg-blue-400 rounded-full h-3 max-w-xs">
+            <div class="bg-white h-3 rounded-full" style="width: {{ progress_percent }}%"></div>
+        </div>
+        <p class="text-sm mt-2">{{ progress_percent|floatformat:0 }}% selesai</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Description -->
+            {% if course.description %}
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-900">📝 Deskripsi</h2>
+                <p class="text-gray-700">{{ course.description }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Modules -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-900">📚 Modul Pembelajaran</h2>
+                </div>
+                <div class="divide-y">
+                    {% for module in modules %}
+                    <div class="p-6 hover:bg-gray-50 transition">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Modul {{ module.order }}: {{ module.title }}</h3>
+                                {% if module.description %}
+                                <p class="text-sm text-gray-600 mt-1">{{ module.description }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="space-y-2 ml-4">
+                            {% for lesson in module.lessons %}
+                            <a href="{% url 'courses:lesson_detail' lesson_id=lesson.id %}" class="flex items-center gap-3 p-2 rounded hover:bg-blue-50 group">
+                                <span class="text-xl">
+                                    {% if lesson.id in completed_lesson_ids %}✅{% else %}📄{% endif %}
+                                </span>
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900 group-hover:text-blue-600">{{ lesson.title }}</p>
+                                    {% if lesson.duration_minutes %}
+                                    <p class="text-xs text-gray-500">⏱️ {{ lesson.duration_minutes }} menit</p>
+                                    {% endif %}
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Course Info -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="font-bold text-lg mb-4 text-gray-900">📋 Informasi Kursus</h3>
+                <div class="space-y-3 text-sm">
+                    <div>
+                        <p class="text-gray-600">Kelas</p>
+                        <p class="font-semibold">{{ course.class_obj.name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Pengajar</p>
+                        <p class="font-semibold">{{ course.teacher.get_full_name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Tahun Akademik</p>
+                        <p class="font-semibold">{{ course.academic_year }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attachments -->
+            {% if attachments %}
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="font-bold text-lg mb-4 text-gray-900">📎 Lampiran</h3>
+                <div class="space-y-2">
+                    {% for attachment in attachments %}
+                    <a href="{{ attachment.file.url }}" class="flex items-center gap-2 p-2 bg-gray-50 rounded hover:bg-blue-50 text-blue-600">
+                        <span>📁</span>
+                        <span class="text-sm truncate">{{ attachment.title }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

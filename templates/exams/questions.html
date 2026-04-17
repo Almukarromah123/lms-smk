@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Exam Questions - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white rounded-lg shadow-md p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">{{ exam.title }} - Questions</h1>
+            <p class="text-gray-600 mt-2">Kelola soal untuk ujian ini. Tambahkan gambar, edit pilihan, atau impor soal dari file Excel.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'exams:question_add' exam.id %}" class="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700">Add Question</a>
+            <a href="{% url 'exams:question_import' exam.id %}" class="bg-green-600 text-white px-5 py-3 rounded-lg hover:bg-green-700">Import .xlsx</a>
+        </div>
+    </div>
+
+    {% if questions %}
+    <div class="grid gap-4">
+        {% for question in questions %}
+        <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <div class="flex justify-between items-start gap-4">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800">Soal {{ forloop.counter }} ({{ question.question_type }})</h2>
+                    <p class="text-gray-700 mt-2">{{ question.question_text|linebreaksbr }}</p>
+                    {% if question.image %}
+                    <img src="{{ question.image.url }}" class="mt-4 max-h-56 rounded-lg object-contain border" alt="Question image">
+                    {% endif %}
+                    <div class="flex flex-wrap gap-3 mt-4 text-sm text-gray-600">
+                        <span>Points: {{ question.points }}</span>
+                        <span>Answer: {{ question.correct_answer }}</span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <a href="{% url 'exams:question_edit' exam.id question.id %}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Edit</a>
+                    <a href="{% url 'exams:question_delete' exam.id question.id %}" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Delete</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-purple-50 border-l-4 border-purple-600 p-6 rounded-lg">
+        <p class="text-purple-800"><i class="fas fa-info-circle mr-2"></i>Belum ada soal untuk ujian ini. Tambahkan satu atau impor dari file .xlsx.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

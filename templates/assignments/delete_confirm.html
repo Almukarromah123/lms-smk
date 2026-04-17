@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Hapus Assignment - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-trash text-red-600 mr-2"></i>Hapus Assignment
+        </h1>
+        <p class="text-gray-600 mt-2">Konfirmasi untuk menghapus assignment ini secara permanen</p>
+    </div>
+
+    <!-- Warning Alert -->
+    <div class="bg-red-50 border-l-4 border-red-600 p-6 rounded">
+        <h3 class="text-lg font-bold text-red-800 mb-2">
+            <i class="fas fa-exclamation-triangle mr-2"></i>Peringatan!
+        </h3>
+        <p class="text-red-800 mb-4">
+            Menghapus assignment ini akan menghapus semua data terkait termasuk:
+        </p>
+        <ul class="list-disc list-inside text-red-700 space-y-2">
+            <li>Semua submission siswa</li>
+            <li>Semua nilai/grade yang sudah diberikan</li>
+            <li>Semua feedback dan komentar</li>
+            <li>Histori pengerjaan siswa</li>
+        </ul>
+        <p class="text-red-800 mt-4 font-semibold">Tindakan ini TIDAK DAPAT dikembalikan!</p>
+    </div>
+
+    <!-- Assignment Details -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Detail Assignment</h2>
+        <div class="space-y-3">
+            <div class="border-b pb-3">
+                <p class="text-gray-600 font-semibold">Judul</p>
+                <p class="text-gray-800">{{ object.title }}</p>
+            </div>
+            <div class="border-b pb-3">
+                <p class="text-gray-600 font-semibold">Kelas</p>
+                <p class="text-gray-800">{{ object.class_obj.name }}</p>
+            </div>
+            <div class="border-b pb-3">
+                <p class="text-gray-600 font-semibold">Mata Pelajaran</p>
+                <p class="text-gray-800">{{ object.subject.name }}</p>
+            </div>
+            <div class="border-b pb-3">
+                <p class="text-gray-600 font-semibold">Deadline</p>
+                <p class="text-gray-800">{{ object.due_date|date:"d F Y H:i" }}</p>
+            </div>
+            <div>
+                <p class="text-gray-600 font-semibold">Jumlah Submission</p>
+                <p class="text-gray-800">{{ object.get_submission_count }} siswa telah submit</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Form -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Konfirmasi Penghapusan</h2>
+        <p class="text-gray-700 mb-6">
+            Apakah Anda yakin ingin menghapus assignment "<strong>{{ object.title }}</strong>"?
+        </p>
+
+        <form method="post" class="flex gap-4">
+            {% csrf_token %}
+
+            <button type="submit" class="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold">
+                <i class="fas fa-trash mr-2"></i>Ya, Hapus Sekarang
+            </button>
+
+            <a href="{% url 'assignments:teacher_list' %}" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 transition-colors font-semibold text-center">
+                <i class="fas fa-times mr-2"></i>Batal
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

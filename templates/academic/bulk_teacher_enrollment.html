@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Bulk Enrollment Guru - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-chalkboard-user text-purple-600 mr-2"></i>Bulk Enrollment Guru
+        </h1>
+        <p class="text-gray-600 mt-2">Upload file Excel untuk menambahkan banyak guru sekaligus</p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="bg-blue-50 border-l-4 border-blue-600 p-6 rounded">
+        <h3 class="font-bold text-blue-800 mb-3">📋 Panduan Penggunaan</h3>
+        <ol class="list-decimal list-inside text-blue-800 space-y-2">
+            <li>Siapkan file Excel (.xlsx) dengan kolom: Email, Nama Depan, Nama Belakang, NIP</li>
+            <li>Mulai dari baris ke-2 (row 1 adalah header)</li>
+            <li>Upload file - sistem akan membuat akun otomatis untuk setiap guru</li>
+            <li>Password otomatis akan digenerate dan hanya ditampilkan sekali</li>
+            <li>Guru dapat langsung login dan mengajar di kelas-kelas mereka</li>
+        </ol>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- File Upload -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-2">
+                    <i class="fas fa-file-excel text-green-600 mr-2"></i>File Excel
+                </label>
+                {{ form.excel_file }}
+                {% if form.excel_file.help_text %}
+                    <p class="text-sm text-gray-600 mt-2">📝 {{ form.excel_file.help_text }}</p>
+                {% endif %}
+                {% if form.excel_file.errors %}
+                    <p class="text-red-600 text-sm mt-2">{{ form.excel_file.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Sample Data -->
+            <div>
+                <h3 class="font-bold text-gray-800 mb-3">📄 Contoh Format Excel:</h3>
+                <div class="overflow-x-auto border border-gray-300 rounded-lg">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="px-4 py-2 text-left">Email</th>
+                                <th class="px-4 py-2 text-left">Nama Depan</th>
+                                <th class="px-4 py-2 text-left">Nama Belakang</th>
+                                <th class="px-4 py-2 text-left">NIP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-t">
+                                <td class="px-4 py-2">ahmad.teacher@example.com</td>
+                                <td class="px-4 py-2">Ahmad</td>
+                                <td class="px-4 py-2">Wijaya</td>
+                                <td class="px-4 py-2">198505101234</td>
+                            </tr>
+                            <tr class="border-t">
+                                <td class="px-4 py-2">siti.guru@example.com</td>
+                                <td class="px-4 py-2">Siti</td>
+                                <td class="px-4 py-2">Nur'Azizah</td>
+                                <td class="px-4 py-2">198607152345</td>
+                            </tr>
+                            <tr class="border-t">
+                                <td class="px-4 py-2">budi.pendidik@example.com</td>
+                                <td class="px-4 py-2">Budi</td>
+                                <td class="px-4 py-2">Santoso</td>
+                                <td class="px-4 py-2">198703203456</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4 pt-4">
+                <button type="submit" class="flex-1 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors font-semibold">
+                    <i class="fas fa-upload mr-2"></i>Upload & Proses
+                </button>
+                <a href="{% url 'academic:bulk_enrollment' %}" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 transition-colors font-semibold text-center">
+                    <i class="fas fa-times mr-2"></i>Batal
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Warning Alert -->
+    <div class="bg-yellow-50 border-l-4 border-yellow-600 p-6 rounded">
+        <h3 class="font-bold text-yellow-800 mb-2">⚠️ Perhatian</h3>
+        <ul class="list-disc list-inside text-yellow-800 space-y-1">
+            <li>Password otomatis akan digenerate dengan format Nama@guru + nomor urut</li>
+            <li>Pastikan email guru unik dan belum terdaftar di sistem</li>
+            <li>NIP akan disimpan di profil guru untuk keperluan administrasi</li>
+            <li>Pastikan guru sudah diberi peran di kelas-kelas mereka setelah enrollment</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

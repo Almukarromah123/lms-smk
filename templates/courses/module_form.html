@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Buat{% endif %} Modul - SMK IT AL-MUKARROMAH{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+    <!-- Breadcrumb -->
+    <nav class="mb-6 text-sm text-gray-600">
+        <a href="{% url 'courses:teacher_courses' %}" class="text-blue-500 hover:underline">← Kembali ke Kursus</a>
+    </nav>
+
+    <h1 class="text-4xl font-bold text-gray-900 mb-8">
+        {% if form.instance.pk %}✏️ Edit Modul{% else %}➕ Buat Modul Baru{% endif %}
+    </h1>
+
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+            <p class="text-blue-700"><strong>Kursus:</strong> {{ course.subject.name }} - {{ course.class_obj.name }}</p>
+        </div>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            {% for field in form %}
+                {% if field.label %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-lg font-semibold text-gray-900 mb-2">
+                        {{ field.label }}
+                        {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+
+                    {% if field.field.widget.input_type == 'textarea' %}
+                        <textarea name="{{ field.name }}" id="{{ field.id_for_label }}"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-32"
+                                  {% if field.field.required %}required{% endif %}>{{ field.value|default:"" }}</textarea>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+
+                    {% if field.errors %}
+                    <div class="text-red-500 text-sm mt-2">
+                        {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Buttons -->
+            <div class="flex gap-4 pt-6 border-t">
+                <button type="submit" class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:shadow-lg font-semibold">
+                    {% if form.instance.pk %}💾 Perbarui{% else %}✓ Buat{% endif %}
+                </button>
+                <a href="{% url 'courses:course_detail' course_id=course.id %}" class="flex-1 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-center font-semibold">
+                    Batal
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    input[type="text"], input[type="email"], input[type="number"], select, textarea {
+        @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
+    }
+
+    select {
+        @apply appearance-none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        padding-right: 2rem;
+    }
+</style>
+{% endblock %}

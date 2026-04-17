@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Pay Bill - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800">Pay Bill</h1>
+
+        <div class="mt-6 p-6 bg-blue-50 rounded-lg border-l-4 border-blue-600">
+            <p class="text-lg font-bold">Amount Due: <span class="text-red-600">Rp {{ bill.amount|floatformat:0 }}</span></p>
+            <p class="text-gray-600 mt-2">{{ bill.bill_type.name }}</p>
+        </div>
+
+        <div class="mt-8 p-6 bg-yellow-50 border-l-4 border-yellow-600 rounded">
+            <p class="text-yellow-800 font-semibold"><i class="fas fa-info-circle mr-2"></i>Payment instructions are coming soon.</p>
+            <p class="text-yellow-700 mt-2">Please contact admin for payment methods.</p>
+        </div>
+
+        <div class="mt-6 flex gap-4">
+            <a href="{% url 'payments:billing' %}" class="bg-gray-600 text-white px-6 py-3 rounded hover:bg-gray-700">
+                Back to Billing
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

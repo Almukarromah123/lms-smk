@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Class Gradebook - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800">Class Gradebook</h1>
+        <p class="text-gray-600 mt-2">Grades for all students in this class</p>
+    </div>
+
+    {% if grades %}
+    <div class="bg-white rounded-lg shadow-md p-6 overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 text-left">Student Name</th>
+                    <th class="px-4 py-2 text-left">Grade</th>
+                    <th class="px-4 py-2 text-left">Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for grade in grades %}
+                <tr class="border-t">
+                    <td class="px-4 py-2">{{ grade.student.get_full_name }}</td>
+                    <td class="px-4 py-2">{{ grade.letter_grade }}</td>
+                    <td class="px-4 py-2">{{ grade.final_score|floatformat:1 }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

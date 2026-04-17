@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Exam Results - SMK IT AL-MUKARROMAH LMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">{{ exam.title }} - Results</h1>
+                <p class="text-gray-600 mt-2">Tampilan ringkasan hasil ujian untuk siswa.</p>
+            </div>
+            {% if can_export %}
+            <a href="?format=xlsx" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Download Excel
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-1">
+        <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+            <p class="text-sm text-gray-600">Total Peserta</p>
+            <p class="text-3xl font-bold text-gray-800 mt-3">{{ sessions|length }}</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-semibold text-gray-800">Daftar Sesi Ujian</h2>
+        {% if sessions %}
+        <div class="overflow-x-auto mt-6">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Siswa</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Skor</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Waktu Mulai</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Waktu Selesai</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    {% for session in sessions %}
+                    <tr>
+                        <td class="px-4 py-4 text-sm text-gray-700">{{ session.student.get_full_name }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700">{{ session.get_status_display }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700">{{ session.score|default:'-' }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700">{{ session.started_at|date:'d M Y H:i' }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700">{{ session.submitted_at|date:'d M Y H:i' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200 text-yellow-800">
+            Belum ada sesi ujian yang selesai untuk saat ini.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
