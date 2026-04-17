@@ -108,14 +108,10 @@ WSGI_APPLICATION = 'lms_project.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 # Using dj-database-url for flexible configuration
 
-DATABASE_URL = config(
-    'DATABASE_URL',
-    default='postgresql://localhost:5432/lms_smk'
-)
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=DATABASE_URL,
+        default=os.getenv('DATABASE_URL'),
         conn_max_age=600,
         conn_health_checks=True,
     )
