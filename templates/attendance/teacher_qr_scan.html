@@ -239,7 +239,7 @@ let isScanning = false;
 let audioContext = null;
 
 function initAudioContext() {
-    """Initialize Web Audio API context"""
+    // Initialize Web Audio API context
     if (!audioContext) {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) {
@@ -250,7 +250,7 @@ function initAudioContext() {
 }
 
 function playBeepSound() {
-    """Play beep sound effect when QR code is detected"""
+    // Play beep sound effect when QR code is detected
     try {
         const ctx = initAudioContext();
         if (!ctx) {
