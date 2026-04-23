@@ -211,6 +211,26 @@
 <!-- Load jsQR Library -->
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
+<!-- Fallback: Check if jsQR loaded -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Page loaded. jsQR available:', typeof jsQR !== 'undefined');
+
+    // Check all buttons
+    const startBtn = document.getElementById('camera-start-btn');
+    const manualTabBtn = document.getElementById('manual-tab-btn');
+
+    console.log('Start Camera button:', startBtn);
+    console.log('Manual Tab button:', manualTabBtn);
+
+    if (startBtn) {
+        startBtn.addEventListener('click', function(e) {
+            console.log('Start Camera button clicked!');
+        });
+    }
+});
+</script>
+
 <script>
 let video = null;
 let canvasElement = null;
@@ -291,10 +311,14 @@ function switchTab(tab) {
 
 async function startCamera() {
     try {
+        console.log('startCamera() called');
+
         // Check if getUserMedia is supported
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             throw new Error('Not supported');
         }
+
+        console.log('Requesting camera access...');
 
         video = document.getElementById('camera-feed');
         canvasElement = document.getElementById('canvas');
@@ -303,6 +327,8 @@ async function startCamera() {
         const stream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: 'environment' }
         });
+
+        console.log('Camera access granted!');
 
         video.srcObject = stream;
         video.setAttribute('playsinline', true); // For iOS
@@ -313,10 +339,24 @@ async function startCamera() {
         document.getElementById('camera-stop-btn').classList.remove('hidden');
 
         isScanning = true;
-        scanQRCode();
+
+        // Check if jsQR is loaded
+        if (typeof jsQR !== 'undefined') {
+            console.log('jsQR library loaded, starting QR scan...');
+            scanQRCode();
+        } else {
+            console.warn('jsQR library not loaded. Using fallback manual entry.');
+            showSuccessMessage('Camera started! Use Manual Input tab to enter QR codes.');
+        }
     } catch (error) {
         let errorMessage = 'Unable to access camera';
-        
+
+        console.error('Camera Error Details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+
         // Provide more specific error messages
         if (error.name === 'NotAllowedError') {
             errorMessage = 'Camera permission denied. Please allow camera access in your browser settings.';
@@ -327,10 +367,10 @@ async function startCamera() {
         } else if (!navigator.mediaDevices) {
             errorMessage = 'Camera access not supported. Try using a modern browser (Chrome, Firefox, Safari, Edge).\n\nPlease use Manual Input tab to paste QR codes instead.';
         }
-        
+
         alert('⚠️ Error accessing camera:\n\n' + errorMessage);
         console.error('Camera error:', error);
-        
+
         // Switch to manual tab as fallback
         switchTab('manual');
     }
