@@ -198,11 +198,11 @@ if not DEBUG:
     ]
 
 # SSL/Security (enabled on Railway)
-SECURE_SSL_REDIRECT = env_bool('SECURE_SSL_REDIRECT', False)
-SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
-SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
-SECURE_HSTS_PRELOAD = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
+SECURE_SSL_REDIRECT = False  # Disable temporarily for CSRF debug
+SECURE_HSTS_SECONDS = 0  # Disable temporarily
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False  # Disable temporarily
+SECURE_HSTS_PRELOAD = False  # Disable temporarily
+SESSION_COOKIE_SECURE = False  # Disable temporarily
+CSRF_COOKIE_SECURE = False  # Disable temporarily
 CSRF_COOKIE_HTTPONLY = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
