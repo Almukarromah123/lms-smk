@@ -199,11 +199,11 @@ _csrf_origins.extend([
 CSRF_TRUSTED_ORIGINS = _csrf_origins
 
 # SSL/Security (enabled on Railway)
-SECURE_SSL_REDIRECT = False  # Disable temporarily for CSRF debug
-SECURE_HSTS_SECONDS = 0  # Disable temporarily
-SECURE_HSTS_INCLUDE_SUBDOMAINS = False  # Disable temporarily
-SECURE_HSTS_PRELOAD = False  # Disable temporarily
-SESSION_COOKIE_SECURE = False  # Disable temporarily
-CSRF_COOKIE_SECURE = False  # Disable temporarily
+SECURE_SSL_REDIRECT = env_bool('SECURE_SSL_REDIRECT', True)  # Enable HTTPS redirect in production
+SECURE_HSTS_SECONDS = int(config('SECURE_HSTS_SECONDS', default='31536000'))  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', True)
+SECURE_HSTS_PRELOAD = env_bool('SECURE_HSTS_PRELOAD', True)
+SESSION_COOKIE_SECURE = env_bool('SESSION_COOKIE_SECURE', True)  # Require HTTPS for session cookie
+CSRF_COOKIE_SECURE = env_bool('CSRF_COOKIE_SECURE', True)  # Require HTTPS for CSRF cookie
 CSRF_COOKIE_HTTPONLY = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
