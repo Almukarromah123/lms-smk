@@ -190,6 +190,13 @@ CSRF_TRUSTED_ORIGINS = config(
     cast=Csv(),
 )
 
+# Add more origins for Railway (fallback)
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS = list(CSRF_TRUSTED_ORIGINS) + [
+        'https://lms-smk-almukarromah.up.railway.app',
+        'https://*.up.railway.app',
+    ]
+
 # SSL/Security (enabled on Railway)
 SECURE_SSL_REDIRECT = env_bool('SECURE_SSL_REDIRECT', False)
 SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
