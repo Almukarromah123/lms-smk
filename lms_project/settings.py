@@ -184,18 +184,19 @@ USE_I18N = True
 USE_TZ = True
 
 # CSRF and Security Settings
-CSRF_TRUSTED_ORIGINS = config(
+_csrf_origins = list(config(
     'CSRF_TRUSTED_ORIGINS',
     default='http://localhost:8000,http://127.0.0.1:8000',
     cast=Csv(),
-)
+))
 
-# Add more origins for Railway (fallback)
-if not DEBUG:
-    CSRF_TRUSTED_ORIGINS = list(CSRF_TRUSTED_ORIGINS) + [
-        'https://lms-smk-almukarromah.up.railway.app',
-        'https://*.up.railway.app',
-    ]
+# Always add Railway domains (unconditionally)
+_csrf_origins.extend([
+    'https://lms-smk-almukarromah.up.railway.app',
+    'https://*.up.railway.app',
+])
+
+CSRF_TRUSTED_ORIGINS = _csrf_origins
 
 # SSL/Security (enabled on Railway)
 SECURE_SSL_REDIRECT = False  # Disable temporarily for CSRF debug
