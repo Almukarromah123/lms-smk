@@ -1,12 +1,14 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, CreateView, TemplateView, DetailView
+from django.views.generic import ListView, CreateView, TemplateView, DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.db.models import Q
+from django.utils import timezone
 from datetime import datetime, timedelta, date
 from calendar import Calendar, monthrange
 
@@ -16,6 +18,7 @@ from assignments.models import Assignment
 from exams.models import Exam
 from .models import AttendanceSession, AttendanceRecord
 from .forms import AttendanceSessionForm, BulkAttendanceMarkForm, StudentAttendanceSubmitForm
+from .utils import get_qr_code_base64
 
 
 class EventCalendarView(LoginRequiredMixin, TemplateView):
@@ -891,10 +894,6 @@ class ExportSemesterReportView(LoginRequiredMixin, TemplateView):
 
 # ============ QR CODE ATTENDANCE FEATURES ============
 
-from django.http import JsonResponse
-from django.views.generic.base import View
-from attendance.utils import get_qr_code_base64
-
 
 class StudentQRCodeDisplayView(LoginRequiredMixin, TemplateView):
     """Student displays QR code for teacher to scan (LURING sessions only)"""
@@ -1073,11 +1072,12 @@ class MarkAttendanceFromQRAPIView(LoginRequiredMixin, View):
     def post(self, request):
         """Mark a student as present using QR data (enrollment_id:session_id:timestamp)"""
         try:
-            import json
-            from django.utils import timezone
-            from datetime import timedelta
-            
-            data = json.loads(request.body)
+            # Parse JSON request body
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse({'error': 'Invalid JSON format in request body.'}, status=400)
+
             qr_data = data.get('qr_data', '').strip()
             session_id = data.get('session_id')
 
@@ -1085,35 +1085,38 @@ class MarkAttendanceFromQRAPIView(LoginRequiredMixin, View):
             if request.user.role != 'TEACHER':
                 return JsonResponse({'error': 'Only teachers can mark attendance.'}, status=403)
 
+            if not qr_data:
+                return JsonResponse({'error': 'QR data is required.'}, status=400)
+
+            if not session_id:
+                return JsonResponse({'error': 'Session ID is required.'}, status=400)
+
             # Parse QR data: enrollment_id:session_id:timestamp
-            try:
-                parts = qr_data.split(':')
-                if len(parts) < 2:
-                    return JsonResponse({'error': 'Invalid QR code format.'}, status=400)
-                
-                enrollment_id = parts[0]
-                qr_session_id = parts[1]
-                # Timestamp might have colons, ignore for now
-            except Exception as e:
-                return JsonResponse({'error': f'Failed to parse QR data: {str(e)}'}, status=400)
+            parts = qr_data.split(':')
+            if len(parts) < 2:
+                return JsonResponse({'error': 'Invalid QR code format. Expected enrollment_id:session_id:timestamp'}, status=400)
+
+            enrollment_id = parts[0]
+            qr_session_id = parts[1]
+            # Timestamp might have colons (ISO format), we only need the first two parts
 
             # Get session
             try:
                 session = AttendanceSession.objects.get(id=session_id)
             except AttendanceSession.DoesNotExist:
-                return JsonResponse({'error': 'Session not found.'}, status=404)
+                return JsonResponse({'error': 'Attendance session not found.'}, status=404)
 
             # Verify teacher owns this session
             if session.class_subject_teacher.teacher != request.user:
-                return JsonResponse({'error': 'Access denied.'}, status=403)
+                return JsonResponse({'error': 'Access denied. You do not own this session.'}, status=403)
 
             # Verify it's LURING session
             if session.session_type != 'LURING':
-                return JsonResponse({'error': 'Not a LURING session.'}, status=400)
+                return JsonResponse({'error': 'This is not a LURING (in-person) session.'}, status=400)
 
             # Verify QR session matches current session
             if str(qr_session_id) != str(session_id):
-                return JsonResponse({'error': 'QR code is not for this session.'}, status=400)
+                return JsonResponse({'error': 'QR code is from a different session.'}, status=400)
 
             # Get student enrollment by ID
             try:
@@ -1122,11 +1125,11 @@ class MarkAttendanceFromQRAPIView(LoginRequiredMixin, View):
                     status='ACTIVE'
                 )
             except StudentEnrollment.DoesNotExist:
-                return JsonResponse({'error': 'Student enrollment not found.'}, status=404)
+                return JsonResponse({'error': f'Student enrollment not found (ID: {enrollment_id}).'}, status=404)
 
             # Verify student is in this class
             if enrollment.class_obj != session.class_subject_teacher.class_obj:
-                return JsonResponse({'error': 'Student is not in this class.'}, status=400)
+                return JsonResponse({'error': 'Student is not enrolled in this class.'}, status=400)
 
             # Create or update attendance record
             record, created = AttendanceRecord.objects.update_or_create(
@@ -1146,14 +1149,12 @@ class MarkAttendanceFromQRAPIView(LoginRequiredMixin, View):
                 'student_name': enrollment.student.get_full_name(),
                 'student_id_in_class': enrollment.student_id_in_class or 'N/A',
                 'created': created,
-            })
+            }, status=200)
 
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON.'}, status=400)
         except Exception as e:
             import traceback
             traceback.print_exc()
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
 
 
 class QRTokenRefreshAPIView(LoginRequiredMixin, View):
