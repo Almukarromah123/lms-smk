@@ -437,42 +437,73 @@ function scanQRCode() {
 function submitQRCode(qrData) {
     // QR data format: enrollment_id:session_id:timestamp
     const sessionId = '{{ session.id }}';
+    const csrfToken = getCSRFToken();
+
+    if (!csrfToken) {
+        showErrorMessage('CSRF token not found. Please refresh the page.');
+        return;
+    }
+
+    console.log('Submitting QR code:', {
+        qr_data: qrData,
+        session_id: sessionId,
+        csrf_token_length: csrfToken.length
+    });
 
     // Use AJAX to submit without page reload
     fetch('{% url "attendance:mark_attendance_qr_api" %}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken'),
+            'X-CSRFToken': csrfToken,
         },
         body: JSON.stringify({
             qr_data: qrData,
             session_id: sessionId,
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
+    .then(response => {
+        console.log('Raw response:', response);
+        console.log('Response status:', response.status);
+        console.log('Response statusText:', response.statusText);
+
+        // Clone response so we can read it multiple times
+        return response.clone().text().then(text => {
+            console.log('Response body:', text);
+
+            // Check if response is valid JSON
+            try {
+                const jsonData = JSON.parse(text);
+                return { ok: response.ok, status: response.status, data: jsonData };
+            } catch (e) {
+                console.error('Failed to parse JSON. First 200 chars:', text.substring(0, 200));
+                throw new Error('Invalid JSON response: ' + e.message);
+            }
+        });
+    })
+    .then(result => {
+        if (result.data.success) {
             // Show success message
-            showSuccessMessage(data.message);
-            
+            showSuccessMessage(result.data.message);
+
             // Update marked students list
-            updateMarkedStudentsList(data.student_name, data.student_id_in_class);
-            
+            updateMarkedStudentsList(result.data.student_name, result.data.student_id_in_class);
+
             // Clear scanned student display
             document.getElementById('scanned-student').value = '';
-            
+
             // Clear QR token field
             document.getElementById('qr_token').value = '';
-            
+
             // Continue scanning - don't stop camera
-            console.log('Student marked:', data.student_name);
+            console.log('Student marked:', result.data.student_name);
         } else {
-            showErrorMessage(data.error || 'Failed to mark attendance.');
+            showErrorMessage(result.data.error || 'Failed to mark attendance.');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Full error object:', error);
+        console.error('Error stack:', error.stack);
         showErrorMessage('Network error: ' + error.message);
     });
 }
@@ -525,6 +556,25 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+function getCSRFToken() {
+    // First try to get from form hidden input (most reliable when HTTPONLY is set)
+    const tokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (tokenInput) {
+        console.log('CSRF token found in form');
+        return tokenInput.value;
+    }
+
+    // Fallback to cookie
+    const cookieToken = getCookie('csrftoken');
+    if (cookieToken) {
+        console.log('CSRF token found in cookie');
+        return cookieToken;
+    }
+
+    console.warn('CSRF token not found!');
+    return '';
 }
 
 function handleMarkPresent() {

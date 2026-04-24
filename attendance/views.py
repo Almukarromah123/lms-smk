@@ -1071,15 +1071,33 @@ class MarkAttendanceFromQRAPIView(LoginRequiredMixin, View):
 
     def post(self, request):
         """Mark a student as present using QR data (enrollment_id:session_id:timestamp)"""
+        import sys
+
+        # Debug: Check if request.body is accessible
+        try:
+            body_unicode = request.body.decode('utf-8')
+            if not body_unicode:
+                print("ERROR: Request body is empty!", file=sys.stderr)
+                return JsonResponse({'error': 'Request body is empty'}, status=400)
+        except UnicodeDecodeError as e:
+            print(f"ERROR: Unicode decode error - {str(e)}", file=sys.stderr)
+            return JsonResponse({'error': f'Invalid encoding: {str(e)}'}, status=400)
+        except Exception as e:
+            print(f"ERROR: Failed to read request body - {str(e)}", file=sys.stderr)
+            return JsonResponse({'error': f'Cannot read request body: {str(e)}'}, status=400)
+
         try:
             # Parse JSON request body
             try:
-                data = json.loads(request.body)
-            except json.JSONDecodeError:
-                return JsonResponse({'error': 'Invalid JSON format in request body.'}, status=400)
+                data = json.loads(body_unicode)
+            except json.JSONDecodeError as e:
+                print(f"ERROR: JSON decode error - {str(e)}", file=sys.stderr)
+                return JsonResponse({'error': f'Invalid JSON format: {str(e)}'}, status=400)
 
             qr_data = data.get('qr_data', '').strip()
             session_id = data.get('session_id')
+
+            print(f"DEBUG: qr_data={qr_data}, session_id={session_id}", file=sys.stderr)
 
             # Verify teacher authorization
             if request.user.role != 'TEACHER':
@@ -1143,6 +1161,8 @@ class MarkAttendanceFromQRAPIView(LoginRequiredMixin, View):
                 }
             )
 
+            print(f"SUCCESS: {enrollment.student.get_full_name()} marked as present", file=sys.stderr)
+
             return JsonResponse({
                 'success': True,
                 'message': f'{enrollment.student.get_full_name()} marked as present.',
@@ -1153,8 +1173,10 @@ class MarkAttendanceFromQRAPIView(LoginRequiredMixin, View):
 
         except Exception as e:
             import traceback
-            traceback.print_exc()
-            return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
+            error_msg = f"Exception in MarkAttendanceFromQRAPIView: {str(e)}"
+            print(f"ERROR: {error_msg}", file=sys.stderr)
+            traceback.print_exc(file=sys.stderr)
+            return JsonResponse({'error': error_msg}, status=500)
 
 
 class QRTokenRefreshAPIView(LoginRequiredMixin, View):
