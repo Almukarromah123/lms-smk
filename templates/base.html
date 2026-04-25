@@ -172,7 +172,7 @@
                 </div>
                 <a href="{% url 'courses:teacher_courses' %}" class="block px-4 py-3 rounded-lg hover:bg-green-50 hover:border-l-4 hover:border-green-600 transition-smooth">
                     <i class="fas fa-book text-green-600 mr-3"></i>
-                    <span class="font-medium">📚 Kelola Kursus</span>
+                    <span class="font-medium">Kelola Kursus</span>
                 </a>
                 <a href="{% url 'assignments:teacher_list' %}" class="block px-4 py-3 rounded-lg hover:bg-green-50 hover:border-l-4 hover:border-green-600 transition-smooth">
                     <i class="fas fa-tasks text-green-600 mr-3"></i>
@@ -193,7 +193,7 @@
                 </div>
                 <a href="{% url 'courses:student_courses' %}" class="block px-4 py-3 rounded-lg hover:bg-indigo-50 hover:border-l-4 hover:border-indigo-600 transition-smooth">
                     <i class="fas fa-book-open text-indigo-600 mr-3"></i>
-                    <span class="font-medium">📚 Kursus Saya</span>
+                    <span class="font-medium"> Kursus Saya</span>
                 </a>
                 <a href="{% url 'assignments:student_list' %}" class="block px-4 py-3 rounded-lg hover:bg-indigo-50 hover:border-l-4 hover:border-indigo-600 transition-smooth">
                     <i class="fas fa-clipboard-list text-indigo-600 mr-3"></i>
@@ -220,7 +220,7 @@
                 </div>
                 <a href="{% url 'attendance:events_calendar' %}" class="block px-4 py-3 rounded-lg hover:bg-pink-50 hover:border-l-4 hover:border-pink-600 transition-smooth">
                     <i class="fas fa-calendar text-pink-600 mr-3"></i>
-                    <span class="font-medium">📅 Events Calendar</span>
+                    <span class="font-medium">Events Calendar</span>
                 </a>
                 {% if user.role == 'TEACHER' %}
                 <a href="{% url 'attendance:create_session' %}" class="block px-4 py-3 rounded-lg hover:bg-pink-50 hover:border-l-4 hover:border-pink-600 transition-smooth">
@@ -229,11 +229,11 @@
                 </a>
                 <a href="{% url 'attendance:teacher_stats_daily' %}" class="block px-4 py-3 rounded-lg hover:bg-pink-50 hover:border-l-4 hover:border-pink-600 transition-smooth">
                     <i class="fas fa-chart-bar text-pink-600 mr-3"></i>
-                    <span class="font-medium">📊 Daily Statistics</span>
+                    <span class="font-medium">Daily Statistics</span>
                 </a>
                 <a href="{% url 'attendance:teacher_semester_report' %}" class="block px-4 py-3 rounded-lg hover:bg-pink-50 hover:border-l-4 hover:border-pink-600 transition-smooth">
                     <i class="fas fa-file-pdf text-pink-600 mr-3"></i>
-                    <span class="font-medium">📋 Semester Report</span>
+                    <span class="font-medium">Semester Report</span>
                 </a>
                 {% else %}
                 <a href="{% url 'attendance:student_history' %}" class="block px-4 py-3 rounded-lg hover:bg-pink-50 hover:border-l-4 hover:border-pink-600 transition-smooth">
@@ -300,7 +300,7 @@
                     </div>
                     <a href="{% url 'courses:teacher_courses' %}" class="block px-4 py-3 rounded-lg hover:bg-green-50 transition-smooth" onclick="toggleMobileMenu()">
                         <i class="fas fa-book text-green-600 mr-3"></i>
-                        <span class="font-medium">📚 Kelola Kursus</span>
+                        <span class="font-medium">Kelola Kursus</span>
                     </a>
                     <a href="{% url 'assignments:teacher_list' %}" class="block px-4 py-3 rounded-lg hover:bg-green-50 transition-smooth" onclick="toggleMobileMenu()">
                         <i class="fas fa-tasks text-green-600 mr-3"></i>
@@ -321,7 +321,7 @@
                     </div>
                     <a href="{% url 'courses:student_courses' %}" class="block px-4 py-3 rounded-lg hover:bg-indigo-50 transition-smooth" onclick="toggleMobileMenu()">
                         <i class="fas fa-book-open text-indigo-600 mr-3"></i>
-                        <span class="font-medium">📚 Kursus Saya</span>
+                        <span class="font-medium">Kursus Saya</span>
                     </a>
                     <a href="{% url 'assignments:student_list' %}" class="block px-4 py-3 rounded-lg hover:bg-indigo-50 transition-smooth" onclick="toggleMobileMenu()">
                         <i class="fas fa-clipboard-list text-indigo-600 mr-3"></i>
@@ -348,7 +348,7 @@
                     </div>
                     <a href="{% url 'attendance:events_calendar' %}" class="block px-4 py-3 rounded-lg hover:bg-pink-50 transition-smooth" onclick="toggleMobileMenu()">
                         <i class="fas fa-calendar text-pink-600 mr-3"></i>
-                        <span class="font-medium">📅 Events Calendar</span>
+                        <span class="font-medium">Events Calendar</span>
                     </a>
                     {% if user.role == 'TEACHER' %}
                     <a href="{% url 'attendance:create_session' %}" class="block px-4 py-3 rounded-lg hover:bg-pink-50 transition-smooth" onclick="toggleMobileMenu()">
@@ -357,11 +357,11 @@
                     </a>
                     <a href="{% url 'attendance:teacher_stats_daily' %}" class="block px-4 py-3 rounded-lg hover:bg-pink-50 transition-smooth" onclick="toggleMobileMenu()">
                         <i class="fas fa-chart-bar text-pink-600 mr-3"></i>
-                        <span class="font-medium">📊 Daily Statistics</span>
+                        <span class="font-medium">Daily Statistics</span>
                     </a>
                     <a href="{% url 'attendance:teacher_semester_report' %}" class="block px-4 py-3 rounded-lg hover:bg-pink-50 transition-smooth" onclick="toggleMobileMenu()">
                         <i class="fas fa-file-pdf text-pink-600 mr-3"></i>
-                        <span class="font-medium">📋 Semester Report</span>
+                        <span class="font-medium">Semester Report</span>
                     </a>
                     {% else %}
                     <a href="{% url 'attendance:student_history' %}" class="block px-4 py-3 rounded-lg hover:bg-pink-50 transition-smooth" onclick="toggleMobileMenu()">
@@ -435,9 +435,9 @@
                 <div>
                     <h4 class="font-semibold mb-4">Ikuti Kami</h4>
                     <div class="flex space-x-3">
-                        <a href="#" class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full transition-smooth"><i class="fab fa-facebook"></i></a>
+                        <a href="https://l.instagram.com/?u=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100092557925700%26mibextid%3DZbWKwL%26utm_source%3Dig%26utm_medium%3Dsocial%26utm_content%3Dlink_in_bio&e=AT6WihPHCnOJ2yXp8VwzZPStfXuaUCREXfLnkBXq28k9pQTIqpGEHadWmO2Ernjeum5pr4mhQgocQwE49lbVVn2JZf0Wzo0QF4jPLMn2Yg" class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full transition-smooth"><i class="fab fa-facebook"></i></a>
                         <a href="#" class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full transition-smooth"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full transition-smooth"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.instagram.com/smkit_almukarromah/" class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full transition-smooth"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
